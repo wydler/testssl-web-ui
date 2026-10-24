@@ -32,14 +32,14 @@ function progressContinue() {
     <div class="row mb-3">
         <label for="host" class="col-md-5 col-form-label text-md-end">Hostname:</label>
         <div class="col-md-2">
-            <input type="text" name="host" id="host" class="form-control" />
+            <input type="text" name="host" id="host" class="form-control" value="{{ form.get('host', '') }}" />
         </div>
     </div>
 
     <div class="row mb-3">
         <label for="ip" class="col-md-5 col-form-label text-md-end">IP address (optional):</label>
         <div class="col-md-2">
-            <input type="text" name="ip" id="ip" class="form-control" />
+            <input type="text" name="ip" id="ip" class="form-control" value="{{ form.get('ip', '') }}" />
             <div class="form-text">Use this IP instead of DNS; the hostname is kept for TLS/SNI.</div>
         </div>
     </div>
@@ -47,7 +47,7 @@ function progressContinue() {
     <div class="row mb-3">
         <label for="port" class="col-md-5 col-form-label text-md-end">Port:</label>
         <div class="col-md-2">
-            <input type="number" name="port" id="port" min="0" max="65535" value="443" class="form-control" />
+            <input type="number" name="port" id="port" min="0" max="65535" value="{{ form.get('port', '443') }}" class="form-control" />
         </div>
     </div>
 
@@ -55,15 +55,15 @@ function progressContinue() {
         <legend class="col-md-5 col-form-label pt-0 text-md-end">Type of scan:</legend>
         <div class="col-md-3">
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="scantype" value="certonly" id="certonly" checked>
+                <input class="form-check-input" type="radio" name="scantype" value="certonly" id="certonly" {% if form.get('scantype', 'certonly') == 'certonly' %}checked{% endif %}>
                 <label class="form-check-label" for="certonly">Test server defaults and certificate expiry/chain.</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="scantype" value="normal" id="normal">
+                <input class="form-check-input" type="radio" name="scantype" value="normal" id="normal" {% if form.get('scantype') == 'normal' %}checked{% endif %}>
                 <label class="form-check-label" for="normal">Normal scan.</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="scantype" value="full" id="full">
+                <input class="form-check-input" type="radio" name="scantype" value="full" id="full" {% if form.get('scantype') == 'full' %}checked{% endif %}>
                 <label class="form-check-label" for="full">Use vulnerability checks which may cause IDSs to block the scanning IP.</label>
             </div>
         </div>
@@ -73,18 +73,18 @@ function progressContinue() {
         <label for="starttls" class="col-md-5 col-form-label text-md-end">Use STARTTLS:</label>
         <div class="col-md-2">
             <div class="form-check mb-2">
-                <input type="checkbox" class="form-check-input" name="starttls" id="starttls" value="yes">
+                <input type="checkbox" class="form-check-input" name="starttls" id="starttls" value="yes" {% if form.get('starttls') == 'yes' %}checked{% endif %}>
                 <label class="form-check-label" for="starttls">Enable STARTTLS</label>
             </div>
             <label for="protocol" class="form-label">STARTTLS protocol:</label>
             <select name="protocol" id="protocol" class="form-select">
-                <option value="ftp">ftp</option>
-                <option value="smtp">smtp</option>
-                <option value="pop3">pop3</option>
-                <option value="imap">imap</option>
-                <option value="xmpp">xmpp</option>
-                <option value="telnet">telnet</option>
-                <option value="ldap">ldap</option>
+                <option value="ftp" {% if form.get('protocol', 'ftp') == 'ftp' %}selected{% endif %}>ftp</option>
+                <option value="smtp" {% if form.get('protocol') == 'smtp' %}selected{% endif %}>smtp</option>
+                <option value="pop3" {% if form.get('protocol') == 'pop3' %}selected{% endif %}>pop3</option>
+                <option value="imap" {% if form.get('protocol') == 'imap' %}selected{% endif %}>imap</option>
+                <option value="xmpp" {% if form.get('protocol') == 'xmpp' %}selected{% endif %}>xmpp</option>
+                <option value="telnet" {% if form.get('protocol') == 'telnet' %}selected{% endif %}>telnet</option>
+                <option value="ldap" {% if form.get('protocol') == 'ldap' %}selected{% endif %}>ldap</option>
             </select>
         </div>
     </div>
@@ -94,7 +94,7 @@ function progressContinue() {
         </div>
         <div class="col-md-3">
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" name="confirm" id="confirm" value="yes">
+                <input type="checkbox" class="form-check-input" name="confirm" id="confirm" value="yes" {% if form.get('confirm') == 'yes' %}checked{% endif %}>
                 <label class="form-check-label" for="confirm">I confirm that I am authorized to scan this system.</label>
             </div>
         </div>
