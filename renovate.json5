@@ -38,4 +38,5 @@
       commitMessageTopic: '{{depName}}',
       commitMessageExtra: '{{#if newVersion}}from {{currentVersion}} to {{newVersion}}{{else}}{{newValue}} from {{currentDigestShort}} to {{newDigestShort}}{{/if}}',
     },
+  ],
 }
