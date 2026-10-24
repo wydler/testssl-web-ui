@@ -1,0 +1,123 @@
+
+---
+name: testssl.sh Updates
+
+"on":
+  workflow_dispatch:
+  schedule:
+    - cron: '0 5 * * 6'
+
+concurrency:
+  group: testsslsh-updates
+  cancel-in-progress: false
+
+env:
+  TSS_VERSION_FILE: testsslsh.version
+
+jobs:
+  tag-new-versions:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    outputs:
+      tss_local_version: ${{ steps.testsslsh_local.outputs.version }}
+      tss_original_version: ${{ steps.testsslsh_remote.outputs.tag }}
+
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Read the latest release tag from testssl.sh
+        id: testsslsh_remote
+        uses: oprypin/find-latest-tag@6957ac556fa6d349727ecabfcaaf9f8e5ee37124 # v1.1.3
+        with:
+          repository: testssl/testssl.sh
+          releases-only: true
+
+      - name: Read the locally stored version
+        id: testsslsh_local
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -s "$TSS_VERSION_FILE"
+          version="$(<"$TSS_VERSION_FILE")"
+
+          printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
+
+      - name: Validate versions
+        shell: bash
+        env:
+          LOCAL_VERSION: ${{ steps.testsslsh_local.outputs.version }}
+          REMOTE_VERSION: ${{ steps.testsslsh_remote.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          for version in "$LOCAL_VERSION" "$REMOTE_VERSION"; do
+            if [[ ! "$version" =~ ^v?[0-9]+(\.[0-9]+)+$ ]]; then
+              echo "::error::Unexpected testssl.sh version format: $version"
+              exit 1
+            fi
+          done
+
+  update-version:
+    needs: tag-new-versions
+    if: >-
+      needs.tag-new-versions.outputs.tss_local_version !=
+      needs.tag-new-versions.outputs.tss_original_version
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Generate GitHub App token
+        id: generate-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.GH_APP_RDP_ID }}
+          private-key: ${{ secrets.GH_APP_RDP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Update version file
+        shell: bash
+        env:
+          NEW_VERSION: ${{ needs.tag-new-versions.outputs.tss_original_version }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$NEW_VERSION" > "$TSS_VERSION_FILE"
+
+      - name: Create or update Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          sign-commits: true
+          branch: renovate/apps/testssl-${{ needs.tag-new-versions.outputs.tss_original_version }}
+          delete-branch: true
+          commit-message: >-
+            chore(deps): Update testssl/testssl.sh to
+            ${{ needs.tag-new-versions.outputs.tss_original_version }}
+          title: >-
+            chore(deps): Update testssl/testssl.sh from
+            ${{ needs.tag-new-versions.outputs.tss_local_version }} to
+            ${{ needs.tag-new-versions.outputs.tss_original_version }}
+          body: |
+            Updates `testssl.sh` from `${{ needs.tag-new-versions.outputs.tss_local_version }}` to `${{ needs.tag-new-versions.outputs.tss_original_version }}`.
+
+            Upstream: https://github.com/testssl/testssl.sh
+          labels: |
+            dependencies
+            apps
+          draft: true
