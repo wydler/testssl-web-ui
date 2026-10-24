@@ -112,3 +112,13 @@ jobs:
           platforms: ${{ env.REGISTRY_PLATFORMS }}
           cache-from: type=registry,ref=${{ env.REGISTRY_ACCOUNT }}/${{ env.REGISTRY_REPO }}:${{ env.REGISTRY_REPO_TAG_CACHE_NAME }}
           cache-to: type=registry,ref=${{ env.REGISTRY_ACCOUNT }}/${{ env.REGISTRY_REPO }}:${{ env.REGISTRY_REPO_TAG_CACHE_NAME }},mode=max
+
+      - name: Promote image to latest
+        if: github.event.release.prerelease == false && github.event.release.draft == false
+        shell: bash
+        run: |
+          # Create or update the "latest" tag to point to the newly released image version.
+          # This operation updates the manifest in the registry and preserves all platform variants.
+          docker buildx imagetools create \
+            -t "${{ env.REGISTRY_ACCOUNT }}/${{ env.REGISTRY_REPO }}:latest" \
+            ${{ steps.tags.outputs.docker }}        
