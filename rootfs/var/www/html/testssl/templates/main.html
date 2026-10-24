@@ -88,12 +88,12 @@ function progressContinue() {
             </select>
         </div>
     </div>
-    <div class="row mb-3">
+    <div class="row mb-3 align-items-center">
         <div class="col-md-5 text-md-end">
             <label for="confirm" class="col-form-label">Authorization:</label>
         </div>
         <div class="col-md-3">
-            <div class="form-check">
+            <div class="form-check mb-0">
                 <input type="checkbox" class="form-check-input" name="confirm" id="confirm" value="yes" {% if form.get('confirm') == 'yes' %}checked{% endif %}>
                 <label class="form-check-label" for="confirm">I confirm that I am authorized to scan this system.</label>
             </div>
