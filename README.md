@@ -76,6 +76,44 @@ Der Container benötigt Netzwerkzugriff auf die zu testenden Ziele. Ohne vorgege
 
 Der GitHub-Actions-Workflow [`build.docker.images.yml`](./.github/workflows/build.docker.images.yml) baut und veröffentlicht bei Releases. Für manuelle Ausführungen müssen die im Workflow genannten Repository-Variablen und Registry-Zugangsdaten konfiguriert sein.
 
+## Cosign
+Cosign is a command-line tool from the Sigstore project used to sign and verify software artifacts such as container images. It enables the digital signing of artifacts to guarantee their origin and integrity. Signed artifacts can be stored in the registry, and verification is possible using public-key/private-key cryptography.
+
+### Installation with dpkg package
+```bash
+LATEST_VERSION=$(curl https://api.github.com/repos/sigstore/cosign/releases/latest | grep tag_name | cut -d : -f2 | tr -d "v\", ")
+curl -O -L "https://github.com/sigstore/cosign/releases/latest/download/cosign_${LATEST_VERSION}_amd64.deb"
+sudo dpkg -i cosign_${LATEST_VERSION}_amd64.deb
+```
+[Source](https://docs.sigstore.dev/cosign/system_config/installation/#with-the-cosign-binary-or-rpmdpkg-package)
+
+### Verifying Signature
+Verify with an on-disk public key provided by the signer:
+```bash
+DOCKER_REPOSITORY=wydler/testssl-web-ui
+GITHUB_REPOSITORY=wydler/testssl-web-ui
+
+TAG=$(curl -fsS https://api.github.com/repos/${GITHUB_REPOSITORY}/releases | grep '"tag_name"' | cut -d'"' -f4 | head -n1)
+curl -O -L https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/refs/tags/${TAG}/cosign.pub
+
+DOCKER_TOKEN=$(curl -fsS "https://auth.docker.io/token?service=registry.docker.io&scope=repository:${DOCKER_REPOSITORY}:pull" | jq -r '.token')
+
+INDEX_DIGEST_SHA=$(curl -fsSI \
+  -H "Authorization: Bearer ${DOCKER_TOKEN}" \
+  -H "Accept: application/vnd.oci.image.index.v1+json" \
+  "https://registry-1.docker.io/v2/${DOCKER_REPOSITORY}/manifests/${TAG}" \
+  | awk -F': ' 'tolower($1)=="docker-content-digest" {print $2}' \
+  | tr -d '\r'
+  )
+
+RESULT=$(cosign verify --key cosign.pub docker.io/${DOCKER_REPOSITORY}:${TAG}@${INDEX_DIGEST_SHA})
+echo $RESULT | jq .
+
+rm cosign.pub
+```
+Hint: The third line finds the name of the latest release on GitHub. If you want to check an older version, statically assign the desired version number to the variable `TAG` (e.g., `TAG=1.0.0`).
+
+
 ## Lizenz
 
 Dieses Projekt steht unter der [GNU General Public License Version 3](./LICENSE). testssl.sh ist ein separates Projekt und unterliegt dessen eigener Lizenz.
