@@ -44,4 +44,7 @@ jobs:
           context: .
           file: ./build/alpine/Dockerfile
           push: false
+          build-args: |
+            APP_VERSION=${{ steps.tss.outputs.version }}
+            DOCKER_IMAGE_VERSION=${{ github.ref_name }}
           platforms: ${{ env.REGISTRY_PLATFORMS }}
