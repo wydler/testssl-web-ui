@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TLS/SSL Test Portal</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+</head>
+<body>
+<main class="container-fluid px-2 pt-4">
+<h1 class="bg-secondary text-white text-center rounded py-1 mb-4">About | <a class="text-white" href="{{ url_for('main') }}">Click for new test</a></h1>
+<div>
+	<p>
+	The Docker Image <a href="https://github.com/shartge/testssl-web">hartge/testssl-web</a> is a fork of <a href="https://github.com/mycloudrevolution/testssl-webfrontend">mycloudrevolution/testssl-webfrontend</a> from Markus Kraus
+	based on the <a href="https://github.com/TKCERT/testssl.sh-webfrontend">testssl.sh-webfrontend</a>
+	Project from <a href="https://github.com/TKCERT">thyssenkrupp CERT</a>. 
+	</p>
+	<p>
+	It uses the <a href="https://github.com/drwetter/testssl.sh">testssl.sh</a> Script from Dirk Wetter.
+	</p>
+<pre>
+{{ about | safe }}
+</pre>
+</div>
+<hr>
+</main>
+<footer class="bg-secondary text-white text-center rounded mx-2 my-3 py-1">
+	<p class="mb-0">This portal uses <a class="link-light" href="https://testssl.sh/">testssl.sh</a>.</p>
+</footer>
+</body>
+</html>

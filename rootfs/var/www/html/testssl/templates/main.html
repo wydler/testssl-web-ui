@@ -1,0 +1,109 @@
+{% extends "app.html" %}
+{% block content %}
+<script>
+let progressVal = 0;
+function progress() {
+    progressVal = 0;
+    const progressBar = document.getElementById("progress-bar");
+    progressBar.textContent = "Please wait...";
+    setTimeout(progressContinue, 1000);
+}
+
+function progressContinue() {
+    const progressBar = document.getElementById("progress-bar");
+    const progress = document.getElementById("progress");
+    progressVal = Math.min(progressVal + 1, 95);
+    progressBar.style.width = progressVal + "%";
+    progress.setAttribute("aria-valuenow", progressVal);
+    if (progressVal < 95) {
+        setTimeout(progressContinue, 1000);
+    }
+}
+</script>
+<main class="container-fluid px-2 pt-4">
+<h1 class="bg-secondary text-white text-center rounded py-1 mb-4">TLS/SSL Test Portal</h1>
+<form method="POST">
+    <div class="mb-3">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="row mb-3">
+        <label for="host" class="col-md-5 col-form-label text-md-end">Hostname/IP:</label>
+        <div class="col-md-2">
+            <input type="text" name="host" id="host" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="port" class="col-md-5 col-form-label text-md-end">Port:</label>
+        <div class="col-md-2">
+            <input type="number" name="port" id="port" min="0" max="65535" value="443" class="form-control" />
+        </div>
+    </div>
+
+    <fieldset class="row mb-3">
+        <legend class="col-md-5 col-form-label pt-0 text-md-end">Type of scan:</legend>
+        <div class="col-md-3">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="scantype" value="certonly" id="certonly" checked>
+                <label class="form-check-label" for="certonly">Test server defaults and certificate expiry/chain.</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="scantype" value="normal" id="normal">
+                <label class="form-check-label" for="normal">Normal scan.</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="scantype" value="full" id="full">
+                <label class="form-check-label" for="full">Use vulnerability checks which may cause IDSs to block the scanning IP.</label>
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="row mb-3">
+        <label for="starttls" class="col-md-5 col-form-label text-md-end">Use STARTTLS:</label>
+        <div class="col-md-2">
+            <div class="form-check mb-2">
+                <input type="checkbox" class="form-check-input" name="starttls" id="starttls" value="yes">
+                <label class="form-check-label" for="starttls">Enable STARTTLS</label>
+            </div>
+            <label for="protocol" class="form-label">STARTTLS protocol:</label>
+            <select name="protocol" id="protocol" class="form-select">
+                <option value="ftp">ftp</option>
+                <option value="smtp">smtp</option>
+                <option value="pop3">pop3</option>
+                <option value="imap">imap</option>
+                <option value="xmpp">xmpp</option>
+                <option value="telnet">telnet</option>
+                <option value="ldap">ldap</option>
+            </select>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-5 text-md-end">
+            <label for="confirm" class="col-form-label">Authorization:</label>
+        </div>
+        <div class="col-md-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="confirm" id="confirm" value="yes">
+                <label class="form-check-label" for="confirm">I confirm that I am authorized to scan this system.</label>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-3 offset-md-5">
+            <p>The SSL check can take up to 5 minutes. Please be patient.</p>
+            <input type="submit" class="btn btn-primary" onclick="progress()" value="Perform SSL Check">
+        </div>
+    </div>
+</form>
+<div class="row">
+    <div class="col-md-2 offset-md-5">
+        <div id="progress" class="progress" role="progressbar" aria-label="Scan progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+        </div>
+    </div>
+</div>
+</main>
+{% endblock %}
