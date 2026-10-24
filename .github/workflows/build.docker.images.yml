@@ -166,7 +166,7 @@ jobs:
           cosign tree ${{ env.REGISTRY }}/${{ steps.tags.outputs.docker }}@${{ steps.build.outputs.digest }}
 
       - name: Promote image to latest
-        if: github.event.release.prerelease == false && github.event.release.draft == false
+        if: github.event_name == 'release' && github.event.action == 'released' && github.event.release.prerelease == false && github.event.release.draft == false
         shell: bash
         run: |
           # Create or update the "latest" tag to point to the newly released image version.
