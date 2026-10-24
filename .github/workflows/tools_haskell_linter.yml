@@ -1,0 +1,30 @@
+---
+name: "Tools - Validate Dockerfile Schema"
+
+"on":
+  pull_request:
+    branches:
+      - "master"
+    paths:
+      - "**Dockerfile"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-dockerfile-schema:
+    name: Haskell Linter
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Validate Dockerfile files
+        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387  # v3.5.0
+        with:
+          dockerfile: "Dockerfile"
+          recursive: "true"
