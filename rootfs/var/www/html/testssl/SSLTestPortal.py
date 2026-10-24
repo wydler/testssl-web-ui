@@ -27,6 +27,7 @@ import subprocess
 import time
 import re
 import socket
+import ipaddress
 
 SENTINEL = '------------SPLIT----------HERE---------'
 
@@ -120,6 +121,21 @@ def main():
         flash("I was already pentested ;)")
         invalid = True
 
+    target_ip = request.form.get('ip', '').strip()
+    if target_ip:
+        try:
+            parsed_ip = ipaddress.ip_address(target_ip)
+            if parsed_ip.is_loopback or (
+                isinstance(parsed_ip, ipaddress.IPv6Address)
+                and parsed_ip.ipv4_mapped is not None
+                and parsed_ip.ipv4_mapped.is_loopback
+            ):
+                flash("Loopback IP addresses are not allowed!")
+                invalid = True
+        except ValueError:
+            flash("Wrong IP address!")
+            invalid = True
+
     try:
         port = int(request.form.get('port', ''))
     except ValueError:
@@ -152,13 +168,15 @@ def main():
 
     if preflightRequest:
         try:
-            with socket.create_connection((host, port), timeout=preflightTimeout):
+            with socket.create_connection((target_ip or host, port), timeout=preflightTimeout):
                 pass
         except OSError:
             flash("Connection failed!")
             return render_template("main.html")
 
     testssl_args = [checkCmd, *checkArgs, "--debug=" + str(testsslDebug)]
+    if target_ip:
+        testssl_args.extend(["--ip", target_ip, "--nodns", "none"])
 
     if scantype == "normal":
         testssl_args.append("--ids-friendly")
