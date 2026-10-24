@@ -109,7 +109,7 @@ def render_line(line):
 @application.route("/", methods=['GET', 'POST'])
 def main():
     if request.method == 'GET':
-        return render_template("main.html")
+        return render_template("main.html", form=request.form)
 
     invalid = False
     host = request.form.get('host', '').strip()
@@ -164,7 +164,7 @@ def main():
         invalid = True
 
     if invalid:
-        return render_template("main.html")
+        return render_template("main.html", form=request.form)
 
     if preflightRequest:
         try:
@@ -172,7 +172,7 @@ def main():
                 pass
         except OSError:
             flash("Connection failed!")
-            return render_template("main.html")
+            return render_template("main.html", form=request.form)
 
     testssl_args = [checkCmd, *checkArgs, "--debug=" + str(testsslDebug)]
     if target_ip:
