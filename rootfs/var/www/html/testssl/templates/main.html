@@ -30,9 +30,17 @@ function progressContinue() {
     </div>
 
     <div class="row mb-3">
-        <label for="host" class="col-md-5 col-form-label text-md-end">Hostname/IP:</label>
+        <label for="host" class="col-md-5 col-form-label text-md-end">Hostname:</label>
         <div class="col-md-2">
             <input type="text" name="host" id="host" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="ip" class="col-md-5 col-form-label text-md-end">IP address (optional):</label>
+        <div class="col-md-2">
+            <input type="text" name="ip" id="ip" class="form-control" />
+            <div class="form-text">Use this IP instead of DNS; the hostname is kept for TLS/SNI.</div>
         </div>
     </div>
 
