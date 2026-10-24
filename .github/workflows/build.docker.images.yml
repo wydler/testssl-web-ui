@@ -121,4 +121,4 @@ jobs:
           # This operation updates the manifest in the registry and preserves all platform variants.
           docker buildx imagetools create \
             -t "${{ env.REGISTRY_ACCOUNT }}/${{ env.REGISTRY_REPO }}:latest" \
-            ${{ steps.tags.outputs.docker }}        
+            ${{ steps.tags.outputs.docker }}
