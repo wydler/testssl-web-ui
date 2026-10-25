@@ -24,16 +24,20 @@ function updateIpOptions() {
 
     if (hasManualIp) {
         dnsSelect.value = "";
+        dnsStatus.classList.remove("text-danger", "fw-semibold");
         dnsStatus.textContent = "A manual IP is entered, so the DNS address selection is unavailable.";
     }
 }
 
-function clearDnsAddresses(statusMessage) {
+function clearDnsAddresses(statusMessage, isError = false) {
     const dnsSelect = document.getElementById("dns_ip");
     dnsSelect.replaceChildren(new Option("Use normal DNS resolution", ""));
     dnsSelect.dataset.loadedHost = "";
     dnsSelect.disabled = true;
-    document.getElementById("dns-address-status").textContent = statusMessage;
+    const dnsStatus = document.getElementById("dns-address-status");
+    dnsStatus.textContent = statusMessage;
+    dnsStatus.classList.toggle("text-danger", isError);
+    dnsStatus.classList.toggle("fw-semibold", isError);
     updateIpOptions();
 }
 
@@ -83,7 +87,7 @@ async function loadDnsAddresses() {
         updateIpOptions();
     } catch (error) {
         console.error("Unable to load DNS addresses.", error);
-        clearDnsAddresses(error.message || "Unable to load DNS addresses.");
+        clearDnsAddresses(error.message || "Unable to load DNS addresses.", true);
     } finally {
         dnsButton.disabled = document.getElementById("ip").value.trim() !== "";
     }
