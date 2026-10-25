@@ -6,7 +6,7 @@ Ein webbasiertes Frontend für [testssl.sh](https://github.com/testssl/testssl.s
 
 - Zertifikats- und Server-Standardtests sowie normale und vollständige Scans
 - Optionaler STARTTLS-Test für FTP, SMTP, POP3, IMAP, XMPP, Telnet und LDAP
-- Optionaler Test nur der ersten vom DNS zurückgegebenen IP-Adresse
+- Auswahl einer bestimmten IP-Adresse aus den DNS-Ergebnissen eines Hostnamens
 - Live-Ausgabe des Scan-Ergebnisses im Browser
 - Download des Scan-Ergebnisses als Textdatei und Kopieren in die Zwischenablage, clientseitig ohne Speicherung auf dem Server
 - Alpine-Docker-Image
@@ -38,13 +38,13 @@ Anschließend ist die Oberfläche unter <http://localhost:5000> erreichbar.
 
 ## Anwendung verwenden
 
-1. Den Hostnamen des zu testenden Servers eingeben. Optional kann eine IP-Adresse angegeben werden. In diesem Fall wird diese statt der DNS-Auflösung verwendet; der Hostname bleibt für TLS/SNI erhalten.
+1. Den Hostnamen des zu testenden Servers eingeben. Über **Load DNS addresses** können die aufgelösten IP-Adressen geladen und eine davon gezielt ausgewählt werden. Alternativ kann eine IP-Adresse manuell eingegeben werden. In beiden Fällen wird die ausgewählte IP statt der DNS-Auflösung für die Verbindung verwendet; der Hostname bleibt für TLS/SNI erhalten und Reverse-DNS-Abfragen (rDNS) bleiben aktiviert.
 2. Port und Scan-Typ auswählen:
    - **Server defaults and certificate expiry/chain** prüft Server-Standardeinstellungen sowie Zertifikatsablauf und -kette.
    - **Normal scan** führt den normalen Scan im IDS-freundlichen Modus aus.
    - **Full scan** schließt Schwachstellenprüfungen ein, die dazu führen können, dass ein IDS die scanende IP-Adresse blockiert.
 3. Bei Bedarf STARTTLS aktivieren und das passende Protokoll auswählen.
-4. Bei mehreren DNS-Adressen kann **Test only one IP address** ausgewählt werden. Dann wird nur die erste vom System gelieferte IP-Adresse getestet; weitere Adressen bzw. Server hinter dem Hostnamen werden nicht geprüft. Eine manuell eingetragene IP-Adresse hat Vorrang und wird unabhängig von dieser Option allein verwendet.
+4. Bei mehreren DNS-Adressen kann eine bestimmte Adresse aus der DNS-Auswahl gewählt werden. Dann wird nur diese IP getestet; weitere Adressen bzw. Server hinter dem Hostnamen werden nicht geprüft. Eine manuell eingetragene IP-Adresse hat Vorrang.
 5. Bestätigen, dass eine Berechtigung zum Testen des Zielsystems vorliegt, und den Test starten.
 6. Nach Abschluss kann die angezeigte Ausgabe über **Download result (.txt)** als Textdatei gespeichert oder über **Copy result** in die Zwischenablage kopiert werden. Der Dateiname enthält Hostname sowie lokales Datum und Uhrzeit im Format `testssl_<hostname>_<JJJJ-MM-TT>_<HH-MM-SS>.txt`. Download und Kopieren erfolgen im Browser; die Anwendung speichert dafür keine zusätzliche Datei auf dem Server.
 
