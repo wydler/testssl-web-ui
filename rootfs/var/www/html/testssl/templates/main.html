@@ -19,6 +19,27 @@ function progressContinue() {
         setTimeout(progressContinue, 1000);
     }
 }
+
+function updateSingleIpOption() {
+    const ipInput = document.getElementById("ip");
+    const singleIp = document.getElementById("single_ip");
+    const singleIpHelp = document.getElementById("single-ip-help");
+    const hasManualIp = ipInput.value.trim() !== "";
+
+    singleIp.disabled = hasManualIp;
+    if (hasManualIp) {
+        singleIp.checked = false;
+        singleIpHelp.textContent = "A manual IP is entered, so this option does not apply. Only the entered IP will be tested.";
+    } else {
+        singleIpHelp.textContent = "When enabled, only the first IP returned by DNS is tested. Other servers behind the hostname will not be tested.";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const ipInput = document.getElementById("ip");
+    ipInput.addEventListener("input", updateSingleIpOption);
+    updateSingleIpOption();
+});
 </script>
 <main class="container-fluid px-2 pt-4">
 <h1 class="bg-secondary text-white text-center rounded py-1 mb-4">TLS/SSL Test Portal</h1>
@@ -42,10 +63,10 @@ function progressContinue() {
             <input type="text" name="ip" id="ip" class="form-control" value="{{ form.get('ip', '') }}" />
             <div class="form-text">Use this IP instead of DNS; the hostname is kept for TLS/SNI.</div>
             <div class="form-check mt-2">
-                <input type="checkbox" class="form-check-input" name="single_ip" id="single_ip" value="yes" {% if form.get('single_ip') == 'yes' %}checked{% endif %}>
+                <input type="checkbox" class="form-check-input" name="single_ip" id="single_ip" value="yes" {% if form.get('single_ip') == 'yes' and not form.get('ip', '').strip() %}checked{% endif %} {% if form.get('ip', '').strip() %}disabled{% endif %}>
                 <label class="form-check-label" for="single_ip">Test only one IP address</label>
             </div>
-            <div class="form-text">Uses the first IP returned by DNS. Other servers behind the hostname will not be tested. An entered IP takes precedence.</div>
+            <div class="form-text" id="single-ip-help">When enabled, only the first IP returned by DNS is tested. Other servers behind the hostname will not be tested.</div>
         </div>
     </div>
 
