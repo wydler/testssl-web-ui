@@ -166,17 +166,31 @@ def main():
     if invalid:
         return render_template("main.html", form=request.form)
 
+    scan_ip = target_ip
+    if request.form.get('single_ip') == "yes" and not scan_ip:
+        try:
+            addresses = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
+        except OSError:
+            flash("DNS resolution failed!")
+            return render_template("main.html", form=request.form)
+
+        if not addresses:
+            flash("No IP address found for the hostname!")
+            return render_template("main.html", form=request.form)
+
+        scan_ip = addresses[0][4][0]
+
     if preflightRequest:
         try:
-            with socket.create_connection((target_ip or host, port), timeout=preflightTimeout):
+            with socket.create_connection((scan_ip or host, port), timeout=preflightTimeout):
                 pass
         except OSError:
             flash("Connection failed!")
             return render_template("main.html", form=request.form)
 
     testssl_args = [checkCmd, *checkArgs, "--debug=" + str(testsslDebug)]
-    if target_ip:
-        testssl_args.extend(["--ip", target_ip, "--nodns", "none"])
+    if scan_ip:
+        testssl_args.extend(["--ip", scan_ip, "--nodns", "none"])
 
     if scantype == "normal":
         testssl_args.append("--ids-friendly")
