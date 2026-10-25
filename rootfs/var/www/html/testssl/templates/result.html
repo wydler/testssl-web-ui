@@ -50,6 +50,14 @@
 	window.addEventListener("touchstart", stopAutoScroll, { passive: true });
 	window.addEventListener("pointerdown", stopAutoScroll);
 </script>
+<p class="mb-3">
+    Target: <strong>{{ host }}:{{ port }}</strong><br>
+    {% if target_ip %}
+    IP address used: <strong>{{ target_ip }}</strong>
+    {% else %}
+    IP address: resolved by testssl.sh; multiple addresses may be tested.
+    {% endif %}
+</p>
 <h2 id="result" class="d-none">Result:</h2>
 {% for message in get_flashed_messages() %}
 <div class="alert alert-danger" role="alert">{{ message }}</div>
