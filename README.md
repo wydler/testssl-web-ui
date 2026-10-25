@@ -37,9 +37,14 @@ Anschließend ist die Oberfläche unter <http://localhost:5000> erreichbar.
 
 ## Anwendung verwenden
 
-1. Den Hostnamen des zu testenden Servers eingeben.
-2. Port, Scan-Typ und bei Bedarf STARTTLS-Protokoll auswählen. Bei mehreren DNS-Adressen kann optional nur die erste zurückgegebene Adresse getestet werden; andere Server hinter dem Hostnamen werden dabei nicht geprüft.
-3. Bestätigen, dass eine Berechtigung zum Testen des Zielsystems vorliegt, und den Test starten.
+1. Den Hostnamen des zu testenden Servers eingeben. Optional kann eine IP-Adresse angegeben werden. In diesem Fall wird diese statt der DNS-Auflösung verwendet; der Hostname bleibt für TLS/SNI erhalten.
+2. Port und Scan-Typ auswählen:
+   - **Server defaults and certificate expiry/chain** prüft Server-Standardeinstellungen sowie Zertifikatsablauf und -kette.
+   - **Normal scan** führt den normalen Scan im IDS-freundlichen Modus aus.
+   - **Full scan** schließt Schwachstellenprüfungen ein, die dazu führen können, dass ein IDS die scanende IP-Adresse blockiert.
+3. Bei Bedarf STARTTLS aktivieren und das passende Protokoll auswählen.
+4. Bei mehreren DNS-Adressen kann **Test only one IP address** ausgewählt werden. Dann wird nur die erste vom System gelieferte IP-Adresse getestet; weitere Adressen bzw. Server hinter dem Hostnamen werden nicht geprüft. Eine manuell eingetragene IP-Adresse hat Vorrang und wird unabhängig von dieser Option allein verwendet.
+5. Bestätigen, dass eine Berechtigung zum Testen des Zielsystems vorliegt, und den Test starten.
 
 
 ## Konfiguration
