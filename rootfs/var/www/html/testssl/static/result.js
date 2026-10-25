@@ -23,7 +23,9 @@ function stopAutoScroll() {
 function abortTest() {
     stopAutoScroll();
     document.getElementById("pagetitle").textContent = "Test aborted";
-    document.getElementById("new-test").classList.remove("d-none");
+    document.querySelectorAll(".new-test").forEach(function(newTestLink) {
+        newTestLink.classList.remove("d-none");
+    });
     setTimeout(function() {
         window.stop();
     }, 100);
@@ -44,33 +46,36 @@ window.addEventListener("pointerdown", stopAutoScroll);
 
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("pagetitle").textContent = "Test done";
-    document.getElementById("new-test").classList.remove("d-none");
-    const downloadButton = document.getElementById("download-result");
-    downloadButton.classList.remove("d-none");
-    downloadButton.addEventListener("click", function() {
-        const output = document.getElementById("result-output").innerText.trim();
-        const host = downloadButton.dataset.host;
-        const date = new Date();
-        const dateString = [
-            date.getFullYear(),
-            String(date.getMonth() + 1).padStart(2, "0"),
-            String(date.getDate()).padStart(2, "0")
-        ].join("-");
-        const timeString = [
-            String(date.getHours()).padStart(2, "0"),
-            String(date.getMinutes()).padStart(2, "0"),
-            String(date.getSeconds()).padStart(2, "0")
-        ].join("-");
-        const blob = new Blob([output + "\n"], { type: "text/plain;charset=utf-8" });
-        const downloadUrl = URL.createObjectURL(blob);
-        const link = document.createElement("a");
+    document.querySelectorAll(".new-test").forEach(function(newTestLink) {
+        newTestLink.classList.remove("d-none");
+    });
+    document.querySelectorAll(".download-result").forEach(function(downloadButton) {
+        downloadButton.classList.remove("d-none");
+        downloadButton.addEventListener("click", function() {
+            const output = document.getElementById("result-output").innerText.trim();
+            const host = downloadButton.dataset.host;
+            const date = new Date();
+            const dateString = [
+                date.getFullYear(),
+                String(date.getMonth() + 1).padStart(2, "0"),
+                String(date.getDate()).padStart(2, "0")
+            ].join("-");
+            const timeString = [
+                String(date.getHours()).padStart(2, "0"),
+                String(date.getMinutes()).padStart(2, "0"),
+                String(date.getSeconds()).padStart(2, "0")
+            ].join("-");
+            const blob = new Blob([output + "\n"], { type: "text/plain;charset=utf-8" });
+            const downloadUrl = URL.createObjectURL(blob);
+            const link = document.createElement("a");
 
-        link.href = downloadUrl;
-        link.download = `testssl_${host}_${dateString}_${timeString}.txt`;
-        link.click();
-        setTimeout(function() {
-            URL.revokeObjectURL(downloadUrl);
-        }, 1000);
+            link.href = downloadUrl;
+            link.download = `testssl_${host}_${dateString}_${timeString}.txt`;
+            link.click();
+            setTimeout(function() {
+                URL.revokeObjectURL(downloadUrl);
+            }, 1000);
+        });
     });
     document.getElementById("result").classList.remove("d-none");
     if (autoScroll) {
