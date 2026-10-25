@@ -2,6 +2,10 @@
 {% block content %}
 <script src="{{ url_for('static', filename='result.js') }}"></script>
 <main class="container-fluid pt-4 pb-0">
+<div id="abort-control" class="position-fixed top-50 start-50 translate-middle z-3 bg-body border rounded shadow p-3 text-center">
+    <button id="abort-test" class="btn btn-danger" type="button">Abort test</button>
+    <p class="small text-body-secondary mb-0 mt-2">You can also press ESC to abort.</p>
+</div>
 <h1 id="topofpage" class="d-flex justify-content-between align-items-center gap-3">
     <span id="pagetitle">Test running, please wait ...</span>
     <span class="d-flex flex-wrap gap-2">
