@@ -46,6 +46,13 @@ Anschließend ist die Oberfläche unter <http://localhost:5000> erreichbar.
 4. Bei mehreren DNS-Adressen kann **Test only one IP address** ausgewählt werden. Dann wird nur die erste vom System gelieferte IP-Adresse getestet; weitere Adressen bzw. Server hinter dem Hostnamen werden nicht geprüft. Eine manuell eingetragene IP-Adresse hat Vorrang und wird unabhängig von dieser Option allein verwendet.
 5. Bestätigen, dass eine Berechtigung zum Testen des Zielsystems vorliegt, und den Test starten.
 
+## Tests ausführen
+
+Die automatisierten Tests benötigen Python und Flask. Flask kann bei Bedarf mit `python -m pip install Flask` installiert werden. Anschließend die Tests im Repository-Stammverzeichnis starten:
+
+```sh
+python -m unittest discover --start-directory tests --verbose
+```
 
 ## Konfiguration
 
