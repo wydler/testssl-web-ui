@@ -231,7 +231,7 @@ def main():
 
     testssl_args = [checkCmd, *checkArgs, "--debug=" + str(testsslDebug)]
     if scan_ip:
-        testssl_args.extend(["--ip", scan_ip, "--nodns", "none"])
+        testssl_args.extend(["--ip", scan_ip])
 
     if scantype == "normal":
         testssl_args.append("--ids-friendly")
