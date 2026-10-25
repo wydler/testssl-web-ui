@@ -16,33 +16,14 @@ function updateIpOptions() {
     const dnsSelect = document.getElementById("dns_ip");
     const dnsButton = document.getElementById("load-dns-addresses");
     const dnsStatus = document.getElementById("dns-address-status");
-    const singleIp = document.getElementById("single_ip");
-    const singleIpHelp = document.getElementById("single-ip-help");
     const hasManualIp = ipInput.value.trim() !== "";
-    const hasSelectedDnsIp = dnsSelect.value !== "";
     const hasDnsAddresses = dnsSelect.dataset.loadedHost !== "";
 
     dnsSelect.disabled = hasManualIp || !hasDnsAddresses;
     dnsButton.disabled = hasManualIp;
-    singleIp.disabled = hasManualIp;
-    if (hasManualIp || hasSelectedDnsIp) {
-        singleIp.checked = false;
-    }
 
     if (hasManualIp) {
         dnsSelect.value = "";
-        singleIp.disabled = true;
-        singleIpHelp.textContent = "A manual IP is entered, so this option does not apply. Only the entered IP will be tested.";
-    } else {
-        singleIpHelp.textContent = "When enabled, only the first IP returned by DNS is tested. Other servers behind the hostname will not be tested.";
-    }
-
-    if (hasSelectedDnsIp) {
-        singleIp.disabled = true;
-        singleIpHelp.textContent = "A specific DNS address is selected, so only that IP will be tested.";
-    }
-
-    if (hasManualIp && dnsStatus) {
         dnsStatus.textContent = "A manual IP is entered, so the DNS address selection is unavailable.";
     }
 }
