@@ -104,8 +104,8 @@
             {% endfor %}
         </div>
     </div>
-    <div class="row mb-3">
-        <div class="col-md-5 text-md-end">
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-5 text-md-end {% if errors | selectattr('0', 'equalto', 'authorization') | list %}align-self-start{% endif %}">
             <label for="confirm" class="col-form-label">Authorization:</label>
         </div>
         <div class="col-md-3">
