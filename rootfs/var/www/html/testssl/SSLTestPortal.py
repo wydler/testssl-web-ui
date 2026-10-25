@@ -195,7 +195,7 @@ def main():
     try:
         port = int(request.form.get('port', ''))
     except ValueError:
-        flash("Port number must be numeric", "port")
+        flash("Port number must be numeric!", "port")
         port = None
         invalid = True
 
