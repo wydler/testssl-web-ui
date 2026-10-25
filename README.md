@@ -6,6 +6,7 @@ Ein webbasiertes Frontend für [testssl.sh](https://github.com/testssl/testssl.s
 
 - Zertifikats- und Server-Standardtests sowie normale und vollständige Scans
 - Optionaler STARTTLS-Test für FTP, SMTP, POP3, IMAP, XMPP, Telnet und LDAP
+- Optionaler Test nur der ersten vom DNS zurückgegebenen IP-Adresse
 - Live-Ausgabe des Scan-Ergebnisses im Browser
 - Alpine-Docker-Image
 
@@ -37,7 +38,7 @@ Anschließend ist die Oberfläche unter <http://localhost:5000> erreichbar.
 ## Anwendung verwenden
 
 1. Den Hostnamen des zu testenden Servers eingeben.
-2. Port, Scan-Typ und bei Bedarf STARTTLS-Protokoll auswählen.
+2. Port, Scan-Typ und bei Bedarf STARTTLS-Protokoll auswählen. Bei mehreren DNS-Adressen kann optional nur die erste zurückgegebene Adresse getestet werden; andere Server hinter dem Hostnamen werden dabei nicht geprüft.
 3. Bestätigen, dass eine Berechtigung zum Testen des Zielsystems vorliegt, und den Test starten.
 
 
