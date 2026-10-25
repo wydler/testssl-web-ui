@@ -106,6 +106,17 @@ def render_line(line):
     return html, None
 
 
+def resolve_scan_ip(host, port, target_ip, single_ip):
+    if target_ip or not single_ip:
+        return target_ip
+
+    addresses = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
+    if not addresses:
+        return None
+
+    return addresses[0][4][0]
+
+
 @application.route("/", methods=['GET', 'POST'])
 def main():
     if request.method == 'GET':
@@ -166,19 +177,21 @@ def main():
     if invalid:
         return render_template("main.html", form=request.form)
 
-    scan_ip = target_ip
-    if request.form.get('single_ip') == "yes" and not scan_ip:
-        try:
-            addresses = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
-        except OSError:
-            flash("DNS resolution failed!")
-            return render_template("main.html", form=request.form)
+    try:
+        scan_ip = resolve_scan_ip(
+            host,
+            port,
+            target_ip,
+            request.form.get('single_ip') == "yes",
+        )
+    except OSError:
+        flash("DNS resolution failed!")
+        return render_template("main.html", form=request.form)
 
-        if not addresses:
+    if request.form.get('single_ip') == "yes" and not target_ip:
+        if not scan_ip:
             flash("No IP address found for the hostname!")
             return render_template("main.html", form=request.form)
-
-        scan_ip = addresses[0][4][0]
 
     if preflightRequest:
         try:
