@@ -23,6 +23,7 @@ function stopAutoScroll() {
 function abortTest() {
     stopAutoScroll();
     document.getElementById("pagetitle").textContent = "Test aborted";
+    document.getElementById("abort-control").classList.add("d-none");
     document.querySelectorAll(".new-test").forEach(function(newTestLink) {
         newTestLink.classList.remove("d-none");
     });
@@ -30,6 +31,12 @@ function abortTest() {
         window.stop();
     }, 100);
 }
+
+document.addEventListener("click", function(event) {
+    if (event.target.closest("#abort-test")) {
+        abortTest();
+    }
+});
 
 document.addEventListener("keydown", function(event) {
     if (event.key === "Escape") {
@@ -46,6 +53,7 @@ window.addEventListener("pointerdown", stopAutoScroll);
 
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("pagetitle").textContent = "Test done";
+    document.getElementById("abort-control").classList.add("d-none");
     document.querySelectorAll(".new-test").forEach(function(newTestLink) {
         newTestLink.classList.remove("d-none");
     });
