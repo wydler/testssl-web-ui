@@ -8,6 +8,7 @@ Ein webbasiertes Frontend für [testssl.sh](https://github.com/testssl/testssl.s
 - Optionaler STARTTLS-Test für FTP, SMTP, POP3, IMAP, XMPP, Telnet und LDAP
 - Optionaler Test nur der ersten vom DNS zurückgegebenen IP-Adresse
 - Live-Ausgabe des Scan-Ergebnisses im Browser
+- Download des Scan-Ergebnisses als Textdatei, clientseitig ohne Speicherung auf dem Server
 - Alpine-Docker-Image
 
 ## Image lokal bauen
@@ -45,6 +46,7 @@ Anschließend ist die Oberfläche unter <http://localhost:5000> erreichbar.
 3. Bei Bedarf STARTTLS aktivieren und das passende Protokoll auswählen.
 4. Bei mehreren DNS-Adressen kann **Test only one IP address** ausgewählt werden. Dann wird nur die erste vom System gelieferte IP-Adresse getestet; weitere Adressen bzw. Server hinter dem Hostnamen werden nicht geprüft. Eine manuell eingetragene IP-Adresse hat Vorrang und wird unabhängig von dieser Option allein verwendet.
 5. Bestätigen, dass eine Berechtigung zum Testen des Zielsystems vorliegt, und den Test starten.
+6. Nach Abschluss kann die angezeigte Ausgabe über **Download result (.txt)** als Textdatei gespeichert werden. Der Dateiname enthält Hostname sowie lokales Datum und Uhrzeit im Format `testssl_<hostname>_<JJJJ-MM-TT>_<HH-MM-SS>.txt`. Der Download wird im Browser erstellt; die Anwendung speichert dafür keine zusätzliche Datei auf dem Server.
 
 
 ## Konfiguration
