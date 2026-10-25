@@ -65,11 +65,13 @@ async function loadDnsAddresses() {
 
     if (!host) {
         dnsStatus.textContent = "Enter a hostname first.";
+        dnsStatus.classList.add("text-danger", "fw-semibold");
         hostInput.focus();
         return;
     }
 
     dnsButton.disabled = true;
+    dnsStatus.classList.remove("text-danger", "fw-semibold");
     dnsStatus.textContent = "Loading DNS addresses...";
     try {
         const url = new URL(dnsButton.dataset.resolveUrl, window.location.href);
@@ -111,6 +113,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const hostInput = document.getElementById("host");
     const dnsSelect = document.getElementById("dns_ip");
     const dnsButton = document.getElementById("load-dns-addresses");
+    const dnsStatus = document.getElementById("dns-address-status");
     const form = document.querySelector("form");
 
     ipInput.addEventListener("input", function() {
@@ -125,8 +128,11 @@ document.addEventListener("DOMContentLoaded", function() {
         updateIpOptions();
     });
     hostInput.addEventListener("input", function() {
+        dnsStatus.classList.remove("text-danger", "fw-semibold");
         if (dnsSelect.dataset.loadedHost && hostInput.value.trim() !== dnsSelect.dataset.loadedHost) {
             clearDnsAddresses("The hostname changed. Load its DNS addresses again.");
+        } else if (dnsStatus.textContent.trim() === "Enter a hostname first.") {
+            dnsStatus.textContent = "Load the DNS addresses to test a specific server behind the hostname.";
         }
     });
     dnsSelect.addEventListener("change", updateIpOptions);
