@@ -41,6 +41,11 @@ function progressContinue() {
         <div class="col-md-2">
             <input type="text" name="ip" id="ip" class="form-control" value="{{ form.get('ip', '') }}" />
             <div class="form-text">Use this IP instead of DNS; the hostname is kept for TLS/SNI.</div>
+            <div class="form-check mt-2">
+                <input type="checkbox" class="form-check-input" name="single_ip" id="single_ip" value="yes" {% if form.get('single_ip') == 'yes' %}checked{% endif %}>
+                <label class="form-check-label" for="single_ip">Test only one IP address</label>
+            </div>
+            <div class="form-text">Uses the first IP returned by DNS. Other servers behind the hostname will not be tested. An entered IP takes precedence.</div>
         </div>
     </div>
 
