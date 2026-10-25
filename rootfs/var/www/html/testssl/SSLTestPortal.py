@@ -202,7 +202,13 @@ def main():
     testssl_args.append(host + ":" + str(port))
 
     def runtest():
-        first, _, last = render_template('result.html', result=SENTINEL).partition(SENTINEL)
+        first, _, last = render_template(
+            'result.html',
+            result=SENTINEL,
+            host=host,
+            port=port,
+            target_ip=scan_ip,
+        ).partition(SENTINEL)
         yield first
         check = None
         selector = selectors.DefaultSelector()
