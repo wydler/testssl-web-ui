@@ -151,21 +151,21 @@ def main():
     invalid = False
     host = request.form.get('host', '').strip()
     if not reHost.fullmatch(host):
-        flash("Wrong host name!")
+        flash("Wrong host name!", "host")
         invalid = True
 
     if host == "localhost" or host.startswith("127.") or host == "::1":
-        flash("I was already pentested ;)")
+        flash("I was already pentested ;)", "host")
         invalid = True
 
     target_ip = request.form.get('ip', '').strip()
     if target_ip:
         try:
             if is_loopback_ip(target_ip):
-                flash("Loopback IP addresses are not allowed!")
+                flash("Loopback IP addresses are not allowed!", "ip")
                 invalid = True
         except ValueError:
-            flash("Wrong IP address!")
+            flash("Wrong IP address!", "ip")
             invalid = True
 
     dns_ip = request.form.get('dns_ip', '').strip() if not target_ip else ''
@@ -174,46 +174,49 @@ def main():
         try:
             dns_addresses = resolve_host_addresses(host)
         except OSError:
-            flash("DNS resolution failed!")
+            flash("DNS resolution failed!", "dns")
             invalid = True
         else:
             if dns_ip not in dns_addresses:
-                flash("The selected IP address is no longer returned for this hostname. Load the DNS addresses again.")
+                flash(
+                    "The selected IP address is no longer returned for this hostname. Load the DNS addresses again.",
+                    "dns",
+                )
                 invalid = True
             else:
                 try:
                     if is_loopback_ip(dns_ip):
-                        flash("Loopback IP addresses are not allowed!")
+                        flash("Loopback IP addresses are not allowed!", "dns")
                         invalid = True
                 except ValueError:
-                    flash("Wrong IP address!")
+                    flash("Wrong IP address!", "dns")
                     invalid = True
 
     try:
         port = int(request.form.get('port', ''))
     except ValueError:
-        flash("Port number must be numeric")
+        flash("Port number must be numeric", "port")
         port = None
         invalid = True
 
     if port is not None and not 0 <= port <= 65535:
-        flash("Wrong port number!")
+        flash("Wrong port number!", "port")
         port = None
         invalid = True
 
     scantype = request.form.get('scantype', '')
     if scantype not in scantypes:
-        flash("Wrong scantype!")
+        flash("Wrong scantype!", "scantype")
         invalid = True
 
     starttls = request.form.get('starttls') == "yes"
     protocol = request.form.get('protocol', '')
     if starttls and protocol not in protocols:
-        flash("Wrong protocol!")
+        flash("Wrong protocol!", "protocol")
         invalid = True
 
     if request.form.get('confirm') != "yes":
-        flash("You must confirm that you are authorized to scan the given system!")
+        flash("You must confirm that you are authorized to scan the given system!", "authorization")
         invalid = True
 
     if invalid:
@@ -226,7 +229,7 @@ def main():
             with socket.create_connection((scan_ip or host, port), timeout=preflightTimeout):
                 pass
         except OSError:
-            flash("Connection failed!")
+            flash("Connection failed!", "connection")
             return render_template("main.html", form=request.form, dns_addresses=dns_addresses)
 
     testssl_args = [checkCmd, *checkArgs, "--debug=" + str(testsslDebug)]
