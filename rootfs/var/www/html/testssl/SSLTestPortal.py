@@ -220,18 +220,6 @@ def main():
         return render_template("main.html", form=request.form, dns_addresses=dns_addresses)
 
     scan_ip = target_ip or dns_ip
-    if request.form.get('single_ip') == "yes" and not scan_ip:
-        try:
-            addresses = resolve_host_addresses(host)
-        except OSError:
-            flash("DNS resolution failed!")
-            return render_template("main.html", form=request.form, dns_addresses=dns_addresses)
-
-        if not addresses:
-            flash("No IP address found for the hostname!")
-            return render_template("main.html", form=request.form, dns_addresses=dns_addresses)
-
-        scan_ip = addresses[0]
 
     if preflightRequest:
         try:
