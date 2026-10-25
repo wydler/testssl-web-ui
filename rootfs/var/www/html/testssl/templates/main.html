@@ -10,7 +10,7 @@
         <div class="col-md-2">
             <input type="text" name="host" id="host" class="form-control" value="{{ form.get('host', '') }}" />
             {% for category, message in errors if category == 'host' %}
-            <div class="form-text text-danger" role="alert">{{ message }}</div>
+            <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
             {% endfor %}
         </div>
     </div>
@@ -20,7 +20,7 @@
         <div class="col-md-2">
             <input type="text" name="ip" id="ip" class="form-control" value="{{ form.get('ip', '') }}" />
             {% for category, message in errors if category == 'ip' %}
-            <div class="form-text text-danger" role="alert">{{ message }}</div>
+            <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
             {% endfor %}
             <div class="form-text">Use this IP instead of DNS; the hostname is kept for TLS/SNI.</div>
             <div class="mt-2">
@@ -42,10 +42,10 @@
                     {% endif %}
                 </div>
                 {% for category, message in errors if category == 'dns' %}
-                <div class="form-text text-danger" role="alert">{{ message }}</div>
+                <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
                 {% endfor %}
                 {% for category, message in errors if category == 'connection' %}
-                <div class="form-text text-danger" role="alert">{{ message }}</div>
+                <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
                 {% endfor %}
             </div>
         </div>
@@ -56,7 +56,7 @@
         <div class="col-md-2">
             <input type="number" name="port" id="port" min="0" max="65535" value="{{ form.get('port', '443') }}" class="form-control" />
             {% for category, message in errors if category == 'port' %}
-            <div class="form-text text-danger" role="alert">{{ message }}</div>
+            <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
             {% endfor %}
         </div>
     </div>
@@ -77,7 +77,7 @@
                 <label class="form-check-label" for="full">Use vulnerability checks which may cause IDSs to block the scanning IP.</label>
             </div>
             {% for category, message in errors if category == 'scantype' %}
-            <div class="form-text text-danger" role="alert">{{ message }}</div>
+            <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
             {% endfor %}
         </div>
     </fieldset>
@@ -100,7 +100,7 @@
                 <option value="ldap" {% if form.get('protocol') == 'ldap' %}selected{% endif %}>ldap</option>
             </select>
             {% for category, message in errors if category == 'protocol' %}
-            <div class="form-text text-danger" role="alert">{{ message }}</div>
+            <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
             {% endfor %}
         </div>
     </div>
@@ -114,7 +114,7 @@
                 <label class="form-check-label" for="confirm">I confirm that I am authorized to scan this system.</label>
             </div>
             {% for category, message in errors if category == 'authorization' %}
-            <div class="form-text text-danger" role="alert">{{ message }}</div>
+            <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
             {% endfor %}
         </div>
     </div>
