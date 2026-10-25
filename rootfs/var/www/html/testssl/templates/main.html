@@ -21,11 +21,25 @@
         <div class="col-md-2">
             <input type="text" name="ip" id="ip" class="form-control" value="{{ form.get('ip', '') }}" />
             <div class="form-text">Use this IP instead of DNS; the hostname is kept for TLS/SNI.</div>
-            <div class="form-check mt-2">
-                <input type="checkbox" class="form-check-input" name="single_ip" id="single_ip" value="yes" {% if form.get('single_ip') == 'yes' and not form.get('ip', '').strip() %}checked{% endif %} {% if form.get('ip', '').strip() %}disabled{% endif %}>
-                <label class="form-check-label" for="single_ip">Test only one IP address</label>
+            <div class="mt-2">
+                <button type="button" id="load-dns-addresses" class="btn btn-outline-secondary btn-sm" data-resolve-url="{{ url_for('resolve_host') }}">
+                    Load DNS addresses
+                </button>
+                <label for="dns_ip" class="form-label mt-2">Select a DNS address:</label>
+                <select name="dns_ip" id="dns_ip" class="form-select mt-2" aria-label="Select a DNS IP address" {% if not dns_addresses %}disabled{% endif %} data-loaded-host="{{ form.get('host', '') if dns_addresses else '' }}">
+                    <option value="">Use normal DNS resolution</option>
+                    {% for address in dns_addresses %}
+                    <option value="{{ address }}" {% if form.get('dns_ip') == address %}selected{% endif %}>{{ address }} (IPv{{ 6 if ':' in address else 4 }})</option>
+                    {% endfor %}
+                </select>
+                <div class="form-text" id="dns-address-status" role="status" aria-live="polite">
+                    {% if dns_addresses %}
+                    {{ dns_addresses|length }} unique DNS address(es) loaded. Select one to test that server only.
+                    {% else %}
+                    Load the DNS addresses to test a specific server behind the hostname.
+                    {% endif %}
+                </div>
             </div>
-            <div class="form-text" id="single-ip-help">When enabled, only the first IP returned by DNS is tested. Other servers behind the hostname will not be tested.</div>
         </div>
     </div>
 

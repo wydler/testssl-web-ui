@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from flask import Flask, Response, request, render_template, flash, stream_with_context
+from flask import Flask, Response, request, render_template, flash, stream_with_context, jsonify
 
 try:
     from markupsafe import escape
@@ -106,10 +106,47 @@ def render_line(line):
     return html, None
 
 
+def resolve_host_addresses(host):
+    addresses = []
+    seen = set()
+    for result in socket.getaddrinfo(host, None, type=socket.SOCK_STREAM):
+        address = result[4][0]
+        if address not in seen:
+            seen.add(address)
+            addresses.append(address)
+    return addresses
+
+
+def is_loopback_ip(address):
+    parsed_ip = ipaddress.ip_address(address)
+    return parsed_ip.is_loopback or (
+        isinstance(parsed_ip, ipaddress.IPv6Address)
+        and parsed_ip.ipv4_mapped is not None
+        and parsed_ip.ipv4_mapped.is_loopback
+    )
+
+
+@application.route("/resolve-host")
+def resolve_host():
+    host = request.args.get("host", "").strip()
+    if not reHost.fullmatch(host) or host == "localhost" or host.startswith("127.") or host == "::1":
+        return jsonify(error="Wrong host name!"), 400
+
+    try:
+        addresses = resolve_host_addresses(host)
+    except OSError:
+        return jsonify(error="DNS resolution failed!"), 502
+
+    return jsonify(addresses=[
+        {"address": address, "version": ipaddress.ip_address(address).version}
+        for address in addresses
+    ])
+
+
 @application.route("/", methods=['GET', 'POST'])
 def main():
     if request.method == 'GET':
-        return render_template("main.html", form=request.form)
+        return render_template("main.html", form=request.form, dns_addresses=[])
 
     invalid = False
     host = request.form.get('host', '').strip()
@@ -124,17 +161,33 @@ def main():
     target_ip = request.form.get('ip', '').strip()
     if target_ip:
         try:
-            parsed_ip = ipaddress.ip_address(target_ip)
-            if parsed_ip.is_loopback or (
-                isinstance(parsed_ip, ipaddress.IPv6Address)
-                and parsed_ip.ipv4_mapped is not None
-                and parsed_ip.ipv4_mapped.is_loopback
-            ):
+            if is_loopback_ip(target_ip):
                 flash("Loopback IP addresses are not allowed!")
                 invalid = True
         except ValueError:
             flash("Wrong IP address!")
             invalid = True
+
+    dns_ip = request.form.get('dns_ip', '').strip() if not target_ip else ''
+    dns_addresses = []
+    if dns_ip and reHost.fullmatch(host):
+        try:
+            dns_addresses = resolve_host_addresses(host)
+        except OSError:
+            flash("DNS resolution failed!")
+            invalid = True
+        else:
+            if dns_ip not in dns_addresses:
+                flash("The selected IP address is no longer returned for this hostname. Load the DNS addresses again.")
+                invalid = True
+            else:
+                try:
+                    if is_loopback_ip(dns_ip):
+                        flash("Loopback IP addresses are not allowed!")
+                        invalid = True
+                except ValueError:
+                    flash("Wrong IP address!")
+                    invalid = True
 
     try:
         port = int(request.form.get('port', ''))
@@ -164,21 +217,9 @@ def main():
         invalid = True
 
     if invalid:
-        return render_template("main.html", form=request.form)
+        return render_template("main.html", form=request.form, dns_addresses=dns_addresses)
 
-    scan_ip = target_ip
-    if request.form.get('single_ip') == "yes" and not scan_ip:
-        try:
-            addresses = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
-        except OSError:
-            flash("DNS resolution failed!")
-            return render_template("main.html", form=request.form)
-
-        if not addresses:
-            flash("No IP address found for the hostname!")
-            return render_template("main.html", form=request.form)
-
-        scan_ip = addresses[0][4][0]
+    scan_ip = target_ip or dns_ip
 
     if preflightRequest:
         try:
@@ -186,11 +227,11 @@ def main():
                 pass
         except OSError:
             flash("Connection failed!")
-            return render_template("main.html", form=request.form)
+            return render_template("main.html", form=request.form, dns_addresses=dns_addresses)
 
     testssl_args = [checkCmd, *checkArgs, "--debug=" + str(testsslDebug)]
     if scan_ip:
-        testssl_args.extend(["--ip", scan_ip, "--nodns", "none"])
+        testssl_args.extend(["--ip", scan_ip])
 
     if scantype == "normal":
         testssl_args.append("--ids-friendly")
