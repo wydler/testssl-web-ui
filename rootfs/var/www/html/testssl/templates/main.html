@@ -4,6 +4,12 @@
 <h1 class="bg-secondary text-white text-center rounded py-1 mb-4">TLS/SSL Test Portal</h1>
 <form method="POST">
     {% set errors = get_flashed_messages(with_categories=True) %}
+    {% set error_state = namespace(authorization=false) %}
+    {% for category, message in errors %}
+    {% if category == 'authorization' %}
+    {% set error_state.authorization = true %}
+    {% endif %}
+    {% endfor %}
 
     <div class="row mb-3">
         <label for="host" class="col-md-5 col-form-label text-md-end">Hostname:</label>
@@ -104,9 +110,9 @@
             {% endfor %}
         </div>
     </div>
-    <div class="row mb-3 align-items-center">
-        <div class="col-md-5 text-md-end {% if errors | selectattr('0', 'equalto', 'authorization') | list %}align-self-start{% endif %}">
-            <label for="confirm" class="col-form-label">Authorization:</label>
+    <div class="row mb-3 {% if not error_state.authorization %}align-items-center{% endif %}">
+        <div class="col-md-5 text-md-end">
+            <label for="confirm" class="col-form-label {% if error_state.authorization %}py-0{% endif %}">Authorization:</label>
         </div>
         <div class="col-md-3">
             <div class="form-check mb-0">
