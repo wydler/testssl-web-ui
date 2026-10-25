@@ -12,6 +12,8 @@
         <button class="download-result btn btn-outline-primary btn-sm d-none" data-host="{{ host }}" type="button">
             Download result (.txt)
         </button>
+        <button class="copy-result btn btn-outline-secondary btn-sm d-none" type="button">Copy result</button>
+        <span class="copy-feedback small align-self-center" role="status" aria-live="polite"></span>
         <a class="new-test btn btn-primary btn-sm d-none" href="{{ url_for('main') }}">Start a new test</a>
     </span>
 </h1>
@@ -38,6 +40,8 @@
         <button class="download-result btn btn-outline-primary btn-sm d-none" data-host="{{ host }}" type="button">
             Download result (.txt)
         </button>
+        <button class="copy-result btn btn-outline-secondary btn-sm d-none" type="button">Copy result</button>
+        <span class="copy-feedback small align-self-center" role="status" aria-live="polite"></span>
         <a class="new-test btn btn-primary btn-sm d-none" href="{{ url_for('main') }}">Start a new test</a>
     </span>
 </div>

@@ -32,6 +32,52 @@ function abortTest() {
     }, 100);
 }
 
+function fallbackCopyText(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.setAttribute("readonly", "");
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+
+    let copied;
+    try {
+        textArea.select();
+        textArea.setSelectionRange(0, textArea.value.length);
+        copied = document.execCommand("copy");
+    } finally {
+        textArea.remove();
+    }
+    if (!copied) {
+        throw new Error("The browser did not copy the result.");
+    }
+}
+
+async function copyResult(button) {
+    const output = document.getElementById("result-output").innerText.trim();
+
+    try {
+        if (
+            window.isSecureContext &&
+            navigator.clipboard &&
+            typeof navigator.clipboard.writeText === "function"
+        ) {
+            try {
+                await navigator.clipboard.writeText(output);
+            } catch {
+                fallbackCopyText(output);
+            }
+        } else {
+            fallbackCopyText(output);
+        }
+        button.parentElement.querySelector(".copy-feedback").textContent = "Copied to clipboard.";
+    } catch (error) {
+        console.error("Unable to copy scan result to clipboard.", error);
+        button.parentElement.querySelector(".copy-feedback").textContent =
+            "Copy failed. Check browser permissions and try again.";
+    }
+}
+
 document.addEventListener("click", function(event) {
     if (event.target.closest("#abort-test")) {
         abortTest();
@@ -83,6 +129,12 @@ document.addEventListener("DOMContentLoaded", function() {
             setTimeout(function() {
                 URL.revokeObjectURL(downloadUrl);
             }, 1000);
+        });
+    });
+    document.querySelectorAll(".copy-result").forEach(function(copyButton) {
+        copyButton.classList.remove("d-none");
+        copyButton.addEventListener("click", function() {
+            copyResult(copyButton);
         });
     });
     document.getElementById("result").classList.remove("d-none");
