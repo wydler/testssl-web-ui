@@ -11,6 +11,7 @@ let autoScroll = true;
 let scroller = setInterval(function() {
     document.documentElement.scrollTop = getDocHeight();
 }, 100);
+const copyFeedbackTimers = new WeakMap();
 
 function stopAutoScroll() {
     autoScroll = false;
@@ -55,6 +56,7 @@ function fallbackCopyText(text) {
 
 async function copyResult(button) {
     const output = document.getElementById("result-output").innerText.trim();
+    const feedback = button.parentElement.querySelector(".copy-feedback");
 
     try {
         if (
@@ -70,11 +72,17 @@ async function copyResult(button) {
         } else {
             fallbackCopyText(output);
         }
-        button.parentElement.querySelector(".copy-feedback").textContent = "Copied to clipboard.";
+        clearTimeout(copyFeedbackTimers.get(feedback));
+        feedback.textContent = "Copied to clipboard.";
+        copyFeedbackTimers.set(feedback, setTimeout(function() {
+            feedback.textContent = "";
+            copyFeedbackTimers.delete(feedback);
+        }, 3000));
     } catch (error) {
         console.error("Unable to copy scan result to clipboard.", error);
-        button.parentElement.querySelector(".copy-feedback").textContent =
-            "Copy failed. Check browser permissions and try again.";
+        clearTimeout(copyFeedbackTimers.get(feedback));
+        copyFeedbackTimers.delete(feedback);
+        feedback.textContent = "Copy failed. Check browser permissions and try again.";
     }
 }
 
