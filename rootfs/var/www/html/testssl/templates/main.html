@@ -3,16 +3,21 @@
 <main class="container-fluid px-2 pt-4">
 <h1 class="bg-secondary text-white text-center rounded py-1 mb-4">TLS/SSL Test Portal</h1>
 <form method="POST">
-    <div class="mb-3">
-        {% for message in get_flashed_messages() %}
-        <div class="alert alert-danger" role="alert">{{ message }}</div>
-        {% endfor %}
-    </div>
+    {% set errors = get_flashed_messages(with_categories=True) %}
+    {% set error_state = namespace(authorization=false) %}
+    {% for category, message in errors %}
+    {% if category == 'authorization' %}
+    {% set error_state.authorization = true %}
+    {% endif %}
+    {% endfor %}
 
     <div class="row mb-3">
         <label for="host" class="col-md-5 col-form-label text-md-end">Hostname:</label>
         <div class="col-md-2">
             <input type="text" name="host" id="host" class="form-control" value="{{ form.get('host', '') }}" />
+            {% for category, message in errors if category == 'host' %}
+            <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
+            {% endfor %}
         </div>
     </div>
 
@@ -20,6 +25,9 @@
         <label for="ip" class="col-md-5 col-form-label text-md-end">IP address (optional):</label>
         <div class="col-md-2">
             <input type="text" name="ip" id="ip" class="form-control" value="{{ form.get('ip', '') }}" />
+            {% for category, message in errors if category == 'ip' %}
+            <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
+            {% endfor %}
             <div class="form-text">Use this IP instead of DNS; the hostname is kept for TLS/SNI.</div>
             <div class="mt-2">
                 <button type="button" id="load-dns-addresses" class="btn btn-outline-secondary btn-sm" data-resolve-url="{{ url_for('resolve_host') }}">
@@ -39,6 +47,12 @@
                     Load the DNS addresses to test a specific server behind the hostname.
                     {% endif %}
                 </div>
+                {% for category, message in errors if category == 'dns' %}
+                <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
+                {% endfor %}
+                {% for category, message in errors if category == 'connection' %}
+                <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -47,6 +61,9 @@
         <label for="port" class="col-md-5 col-form-label text-md-end">Port:</label>
         <div class="col-md-2">
             <input type="number" name="port" id="port" min="0" max="65535" value="{{ form.get('port', '443') }}" class="form-control" />
+            {% for category, message in errors if category == 'port' %}
+            <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
+            {% endfor %}
         </div>
     </div>
 
@@ -65,6 +82,9 @@
                 <input class="form-check-input" type="radio" name="scantype" value="full" id="full" {% if form.get('scantype') == 'full' %}checked{% endif %}>
                 <label class="form-check-label" for="full">Use vulnerability checks which may cause IDSs to block the scanning IP.</label>
             </div>
+            {% for category, message in errors if category == 'scantype' %}
+            <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
+            {% endfor %}
         </div>
     </fieldset>
 
@@ -85,17 +105,23 @@
                 <option value="telnet" {% if form.get('protocol') == 'telnet' %}selected{% endif %}>telnet</option>
                 <option value="ldap" {% if form.get('protocol') == 'ldap' %}selected{% endif %}>ldap</option>
             </select>
+            {% for category, message in errors if category == 'protocol' %}
+            <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
+            {% endfor %}
         </div>
     </div>
-    <div class="row mb-3 align-items-center">
+    <div class="row mb-3 {% if not error_state.authorization %}align-items-center{% endif %}">
         <div class="col-md-5 text-md-end">
-            <label for="confirm" class="col-form-label">Authorization:</label>
+            <label for="confirm" class="col-form-label {% if error_state.authorization %}py-0{% endif %}">Authorization:</label>
         </div>
         <div class="col-md-3">
             <div class="form-check mb-0">
                 <input type="checkbox" class="form-check-input" name="confirm" id="confirm" value="yes" {% if form.get('confirm') == 'yes' %}checked{% endif %}>
                 <label class="form-check-label" for="confirm">I confirm that I am authorized to scan this system.</label>
             </div>
+            {% for category, message in errors if category == 'authorization' %}
+            <div class="form-text text-danger fw-semibold" role="alert">{{ message }}</div>
+            {% endfor %}
         </div>
     </div>
     <div class="row mb-3">
